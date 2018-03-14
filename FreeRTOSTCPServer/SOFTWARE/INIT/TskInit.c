@@ -41,30 +41,36 @@ void TskInit(void *arg)
 			LCD_ShowString(30,400,200,24,24,(u8 *)"Flash Disk Format Error ");	//格式化失败
 		vTaskDelay(1000);
 	}													    
-	LCD_Fill(30,400,240,400+24,BLACK);		//清除显示			  
-	while(exf_getfree((u8 *)"1:",&total,&free))	//得到外部FLASH的总容量和剩余容量
+	LCD_Fill(30,400,240,400+24,BLACK);		//清除显示	
+
+	while(1)
 	{
-		LCD_ShowString(30,400,200,24,24,(u8 *)"FLASH Fatfs Error!");
-		vTaskDelay(200);
-		LCD_Fill(30,400,240,400+24,BLACK);	//清除显示			  
-		vTaskDelay(200);
+		while(exf_getfree((u8 *)"1:",&total,&free))	//得到外部FLASH的总容量和剩余容量
+		{
+			LCD_ShowString(30,400,200,24,24,(u8 *)"FLASH Fatfs Error!");
+			vTaskDelay(200);
+			LCD_Fill(30,400,240,400+24,BLACK);	//清除显示			  
+			vTaskDelay(200);
+		}
+		LCD_ShowString(30,400,200,24,24,(u8 *)"FATFS OK!");	 
+		LCD_ShowString(30,430,300,24,24,(u8 *)"FLASH Total Size :    MB");	 
+		LCD_ShowString(30,460,300,24,24,(u8 *)"FLASH  Free Size :    MB"); 	    
+		LCD_ShowNum(30+12*19,430,total>>10,2,24);					//显示FLASH卡总容量 MB
+		LCD_ShowNum(30+12*19,460,free>>10,2,24);					//显示FLASH卡剩余容量 MB
+		while(exf_getfree((u8 *)"0",&total,&free))	//得到SD卡的总容量和剩余容量
+		{
+			LCD_ShowString(30,400,240,24,24,(u8 *)"SD Card Fatfs Error!");
+			vTaskDelay(200);
+			LCD_Fill(30,400,240,400+24,BLACK);	//清除显示			  
+			vTaskDelay(200);
+		}
+		LCD_ShowString(30,490,300,24,24,(u8 *)"SD Total Size :     MB");	 
+		LCD_ShowString(30,520,300,24,24,(u8 *)"SD  Free Size :     MB"); 	    
+		LCD_ShowNum(30+12*16,490,total>>10,3,24);					//显示SD卡总容量 MB
+		LCD_ShowNum(30+12*16,520,free>>10,3,24);					//显示SD卡剩余容量 MB
+		vTaskDelay(500);
 	}
-	LCD_ShowString(30,400,200,24,24,(u8 *)"FATFS OK!");	 
-	LCD_ShowString(30,430,300,24,24,(u8 *)"FLASH Total Size :    MB");	 
-	LCD_ShowString(30,460,300,24,24,(u8 *)"FLASH  Free Size :    MB"); 	    
- 	LCD_ShowNum(30+12*19,430,total>>10,2,24);					//显示FLASH卡总容量 MB
- 	LCD_ShowNum(30+12*19,460,free>>10,2,24);					//显示FLASH卡剩余容量 MB
-	while(exf_getfree((u8 *)"0",&total,&free))	//得到SD卡的总容量和剩余容量
-	{
-		LCD_ShowString(30,400,240,24,24,(u8 *)"SD Card Fatfs Error!");
-		vTaskDelay(200);
-		LCD_Fill(30,400,240,400+24,BLACK);	//清除显示			  
-		vTaskDelay(200);
-	}
-	LCD_ShowString(30,490,300,24,24,(u8 *)"SD Total Size :     MB");	 
-	LCD_ShowString(30,520,300,24,24,(u8 *)"SD  Free Size :     MB"); 	    
-	LCD_ShowNum(30+12*16,490,total>>10,3,24);					//显示SD卡总容量 MB
-	LCD_ShowNum(30+12*16,520,free>>10,3,24);					//显示SD卡剩余容量 MB
+
 	vTaskSuspend(NULL);  					//挂起自身任务
 }
 int TskInitCreate(void)
